@@ -1,17 +1,23 @@
 // server.js
 import "dotenv/config";
 import express, { json } from "express";
-import authDb from "./config/db.js"; // Ensure the correct file extension if using ES modules
+import authDb from "./config/db.js";
 import userRoutes from "./routes/userRoute.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
+import rateLimit from "express-rate-limit";
 
 import path from "path";
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 50,
+  message:
+    "Too many authentication requests from this IP, please try again after 15 minutes",
+});
 const app = express();
 
-// Middleware to parse JSON bodies
 app.use(json());
-app.use("/users", userRoutes);
+app.use("/users", authLimiter, userRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
