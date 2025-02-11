@@ -39,7 +39,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const authUser = asyncHandler(async (req, res) => {
   let { email, password } = req.body;
-  password = decryptPassword(password);
+  //   password = decryptPassword(password);
   const user = await User.findOne({ email });
   if (user && (await user.matchPassword(password))) {
     let refreshToken = generateRefreshToken(user._id);
